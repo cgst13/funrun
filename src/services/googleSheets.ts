@@ -89,6 +89,45 @@ export const googleSheetsService = {
   },
 
   /**
+   * Creates a PayMongo payment session via Google Apps Script proxy
+   */
+  async createPayment(amount: number, registrationId: string, successUrl: string, cancelUrl: string): Promise<any> {
+    try {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        redirect: 'follow', // Important for Google Script redirects
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8', 
+        },
+        body: JSON.stringify({
+          action: 'create_payment',
+          data: {
+            amount,
+            registrationId,
+            successUrl,
+            cancelUrl
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to connect to payment proxy');
+      }
+
+      const result = await response.json();
+      
+      if (result.status === 'error') {
+        throw new Error(result.message);
+      }
+      
+      return result.data; // This will be the PayMongo response
+    } catch (error) {
+      console.error('Error creating payment:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Saves event settings to Google Sheets
    */
   async saveSettings(settings: any): Promise<boolean> {
