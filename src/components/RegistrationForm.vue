@@ -180,7 +180,6 @@ const submitForm = async () => {
               <option value="" disabled>Select</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
-              <option value="Prefer not to say">Prefer not to say</option>
             </select>
             <div class="select-arrow">▼</div>
           </div>
