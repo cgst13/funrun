@@ -52,9 +52,17 @@ export const createCheckoutSession = async (amount: number, registrationId: stri
   };
 
   try {
-    // Use local proxy path to avoid CORS issues during development
-    // In production, this call must be moved to a backend server
-    const response = await fetch('/api/paymongo/v1/checkout_sessions', options);
+    // Determine the API URL based on environment
+    // In production (GitHub Pages), we cannot use the Vite proxy.
+    // We must call the API directly.
+    // WARNING: Calling PayMongo directly from the frontend may trigger CORS errors if PayMongo does not allow it.
+    // However, for this client-side demo, we will attempt a direct call.
+    const isProduction = import.meta.env.PROD;
+    const apiUrl = isProduction 
+      ? 'https://api.paymongo.com/v1/checkout_sessions' 
+      : '/api/paymongo/v1/checkout_sessions';
+
+    const response = await fetch(apiUrl, options);
     
     const text = await response.text();
     try {
